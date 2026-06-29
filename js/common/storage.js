@@ -1,0 +1,64 @@
+export const storage = (table) => {
+
+    /**
+     * @param {string|null} [key=null]
+     * @returns {any}
+     */
+    const get = (key = null) => {
+        let data = {};
+        try {
+            data = JSON.parse(localStorage.getItem(table)) || {};
+        } catch (err) {
+            data = {};
+        }
+        return key ? data[String(key)] : data;
+    };
+
+    /**
+     * @param {string} key
+     * @param {any} value
+     * @returns {void}
+     */
+    const set = (key, value) => {
+        const data = get();
+        data[String(key)] = value;
+        localStorage.setItem(table, JSON.stringify(data));
+    };
+
+    /**
+     * @param {string} key
+     * @returns {boolean}
+     */
+    const has = (key) => Object.keys(get()).includes(String(key));
+
+    /**
+     * @param {string} key
+     * @returns {void}
+     */
+    const unset = (key) => {
+        if (!has(key)) {
+            return;
+        }
+
+        const data = get();
+        delete data[String(key)];
+        localStorage.setItem(table, JSON.stringify(data));
+    };
+
+    /**
+     * @returns {void}
+     */
+    const clear = () => localStorage.setItem(table, '{}');
+
+    if (!localStorage.getItem(table)) {
+        clear();
+    }
+
+    return {
+        set,
+        get,
+        has,
+        clear,
+        unset,
+    };
+};
